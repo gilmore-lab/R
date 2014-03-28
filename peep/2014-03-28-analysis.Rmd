@@ -1,0 +1,60 @@
+PEEP Script Ratings Analysis
+========================================================
+
+# Load data
+```{r}
+peep.df = read.csv("peep-script-ratings.csv", header=TRUE)
+library( ggplot2 )
+library( nlme )
+peep.df$Script = as.factor( peep.df$Script )
+```
+
+# Histogram of Angry, Happy Ratings by Script Prosody
+```{r}
+qplot( Angry.Rating, data=peep.df, geom="histogram", fill=Prosody )
+qplot( Happy.Rating, data=peep.df, geom="histogram", fill=Prosody)
+```
+
+# Details on Ratings by Script
+```{r}
+qplot( Prosody, Angry.Rating, data=peep.df, geom="jitter", color=Script )
+qplot( Prosody, Happy.Rating, data=peep.df, geom="jitter", color=Script )
+```
+
+# Better depiction of Ratings by Script
+```{r}
+qplot( Script, Angry.Rating, data=peep.df, geom="jitter", color=Prosody )
+qplot( Script, Happy.Rating, data=peep.df, geom="jitter", color=Prosody )
+```
+
+# Difference score Angry-Happy as a function of Prosody
+```{r}
+qplot( Angry.Rating-Happy.Rating, data=peep.df, geom="density", color=Prosody )
+```
+
+# By Particip
+```{r}
+qplot( Script, Angry.Rating, data=peep.df, geom="point", facets = Particip ~ ., color=Prosody )
+qplot( Script, Happy.Rating, data=peep.df, geom="point", facets = Particip ~ ., color=Prosody )
+```
+
+# Mixed effects model on Angry Ratings
+```{r}
+angry.lme = lme( fixed = Angry.Rating ~ Prosody*Script, data=peep.df, random = ~ 1 | Particip )
+summary( angry.lme )
+anova( angry.lme )
+```
+
+# Mixed effects model on Angry Ratings
+```{r}
+happy.lme = lme( fixed = Happy.Rating ~ Prosody*Script, data=peep.df, random = ~ 1 | Particip )
+summary( happy.lme )
+anova( happy.lme )
+```
+
+# Mixed effects model on Difference
+```{r}
+diff.lme = lme( fixed = ( Angry.Rating-Happy.Rating ) ~ Prosody*Script, data=peep.df, random = ~ 1 | Particip )
+summary( diff.lme )
+anova( diff.lme )
+```
